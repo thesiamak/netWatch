@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">NetWatch</string>
+    <string name="netwatch_lost_connection">No internet connection</string>
+</resources>

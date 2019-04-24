@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Network change notifier sample</string>
+    <string name="home_message">NetWatch is watching</string>
+</resources>
