@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import ir.drax.netwatch.NetWatch;
-import ir.drax.netwatch.NetworkChangeReceiver_navigator;
+import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver_navigator {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,17 +16,19 @@ public class MainActivity extends AppCompatActivity {
 
         NetWatch.builder(this)
                 .setIcon(R.drawable.ic_signal_wifi_off)
-                .setCallBack(new NetworkChangeReceiver_navigator() {
-                    @Override
-                    public void onConnected(int source) {
-                        Toast.makeText(MainActivity.this, "connected", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onDisconnected() {
-                        Toast.makeText(MainActivity.this, "disconnected", Toast.LENGTH_SHORT).show();
-                    }
-                })
+                .setCallBack(this)
                 .build();
     }
+
+
+    @Override
+    public void onConnected(int source) {
+        Toast.makeText(MainActivity.this, "connected", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDisconnected() {
+        Toast.makeText(MainActivity.this, "disconnected", Toast.LENGTH_SHORT).show();
+    }
 }
+
