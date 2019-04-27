@@ -25,11 +25,11 @@ import ir.drax.netwatch.cb.Ping_navigator;
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
     private static String TAG = NetworkChangeReceiver.class.getSimpleName();
-    public static int CONNECTED_WIFI = 1;
-    public static int CONNECTED_MOBILE = 2;
-    public static int DISCONNECTED = 0;
-    public static int CONNECTED = 3;
-    private static int LAST_STATE = 0;
+    private static int CONNECTED_WIFI = 1;
+    private static int CONNECTED_MOBILE = 2;
+    private static int DISCONNECTED = 0;
+    private static int CONNECTED = 3;
+    private static int LAST_STATE = -1;
     private static int NOTIFICATIONS_ID=987;
     private static int GENERAL_PING_INTERVAL = 20;
     private static int notificationIcon = R.drawable.ic_nosignal;
@@ -39,6 +39,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static int delay = 0 ;
     private static Handler pingHandler = new Handler();
     private static Ping ping = new Ping();
+    private static boolean autoCancel = true, notificationEnabled = true;
 
     public NetworkChangeReceiver() {
         super();
@@ -47,9 +48,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.e( TAG, "onReceive ..." + getConnectivityStatus(context));
         if (LAST_STATE == getConnectivityStatus(context))return;
 
-        Log.e( TAG, "onReceive ..." + getConnectivityStatus(context));
 
         checkState(context,0 , 4);
     }
@@ -66,29 +67,31 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             }
             else uiNavigator.onDisconnected();
 
-            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), getNotificationIcon());
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                    /*.setContentIntent(PendingIntent.getActivity(
-                            context,
-                            0,
-                            notifyIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    ))*/
-                    .setSmallIcon(getNotificationIcon())
-                    .setLargeIcon(bitmap)
-                    .setColor(Color.parseColor("#ffffff"))
-                    .setContentTitle(message==null?context.getString(R.string.netwatch_lost_connection):message )
-                    .setAutoCancel(true)
-                    .setOngoing(true);
-            //.setContentText(context.getString(R.string.lost_internet)  + " - " + context.getString(R.string.app_name));
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                mBuilder.setChannelId(TAG);
-                createChannel(notificationManager);
+            if (notificationEnabled) {
+
+                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), getNotificationIcon());
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                        /*.setContentIntent(PendingIntent.getActivity(
+                                context,
+                                0,
+                                notifyIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        ))*/
+                        .setSmallIcon(getNotificationIcon())
+                        .setLargeIcon(bitmap)
+                        .setColor(Color.parseColor("#ffffff"))
+                        .setContentTitle(message == null ? context.getString(R.string.netwatch_lost_connection) : message)
+                        .setAutoCancel(autoCancel)
+                        .setOngoing(true);
+                //.setContentText(context.getString(R.string.lost_internet)  + " - " + context.getString(R.string.app_name));
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mBuilder.setChannelId(TAG);
+                    createChannel(notificationManager);
+                }
+
+                notificationManager.notify(NOTIFICATIONS_ID, mBuilder.build());
             }
-
-            notificationManager.notify(NOTIFICATIONS_ID, mBuilder.build());
-
         } else {
             hideNotification(context);
             if (uiNavigator!=null)
@@ -164,7 +167,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public static void checkState(Context context){
         checkState(context,delay,repeat);
     }
-    public static void checkState(Context context,int delay,int repeat){
+    public static  void checkState(Context context,int delay,int repeat){
         if (repeat==0){
             NetworkChangeReceiver.repeat = 1;
             NetworkChangeReceiver.delay = GENERAL_PING_INTERVAL;
@@ -200,4 +203,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         }),1000 * NetworkChangeReceiver.delay);
     }
 
+    public static void setAutoCancel(boolean autoCancel) {
+        NetworkChangeReceiver.autoCancel = autoCancel;
+    }
+
+    public static void setNotificationEnabled(boolean notificationEnabled) {
+        NetworkChangeReceiver.notificationEnabled = notificationEnabled;
+    }
 }

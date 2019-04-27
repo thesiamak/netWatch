@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">NetWatch</string>
     <string name="netwatch_lost_connection">No internet connection</string>
+    <string name="netwatch_target_ping_server_ip_add">8.8.8.8</string>
 </resources>

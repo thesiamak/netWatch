@@ -15,18 +15,25 @@ public class Builder {
         NetworkChangeReceiver.setNotificationIcon(icon);
         return this;
     }
+    public void build(){
+        NetworkChangeReceiver.checkState(activity);
+    }
 
     public Builder setCallBack(NetworkChangeReceiver_navigator uiNavigator){
         NetworkChangeReceiver.setUiNavigator(uiNavigator);
         return this;
     }
 
-
-    public void build(){
-        NetworkChangeReceiver.checkState(activity);
-    }
-
     public void setMessage(String message){
         NetworkChangeReceiver.setMessage(message);
+    }
+
+    public Builder setNotificationAutoCancel(boolean autoCancel) {
+        NetworkChangeReceiver.setAutoCancel(autoCancel);
+        return this;
+    }
+    public Builder setNotificationEnabled(boolean enabled) {
+        NetworkChangeReceiver.setNotificationEnabled(enabled);
+        return this;
     }
 }

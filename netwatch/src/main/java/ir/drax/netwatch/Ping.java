@@ -11,18 +11,18 @@ class Ping implements Runnable {
     private Context context;
 
 
-    public Ping() { }
+    Ping() { }
 
     public Ping(Ping_navigator cb) {
         this.cb = cb;
     }
 
-    public Ping setCb(Ping_navigator cb) {
+    Ping setCb(Ping_navigator cb) {
         this.cb = cb;
         return this;
     }
 
-    public Ping setContext(Context context) {
+    Ping setContext(Context context) {
         this.context = context;
         return this;
     }
@@ -33,7 +33,7 @@ class Ping implements Runnable {
         Runtime runtime = Runtime.getRuntime();
         try
         {
-            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 "+ context.getString(R.string.netwatch_target_ping_server_ip_add));
             int mExitValue = mIpAddrProcess.waitFor();
             System.out.println(" mExitValue "+mExitValue);
             if(mExitValue==0){
