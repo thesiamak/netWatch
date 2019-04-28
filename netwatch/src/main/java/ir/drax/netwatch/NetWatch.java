@@ -1,11 +1,15 @@
 package ir.drax.netwatch;
 
 import android.app.Activity;
+import android.content.Context;
 
 public class NetWatch {
     public static Builder builder(Activity activity){
-        /*NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
-        activity.registerReceiver(networkChangeReceiver,null);*/
-        return new Builder(activity);
+        return Builder.getInstance(activity);
     }
+
+    public static void unregister(Context context){
+        Builder.getInstance(context).unregister();
+    }
+
 }

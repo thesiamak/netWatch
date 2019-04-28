@@ -5,16 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
 
-        <receiver
-            android:enabled="true"
-            android:name=".NetworkChangeReceiver"
-            android:label="NetworkChangeReceiver" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.STATE_CHANGE"/>
-            </intent-filter>
-        </receiver>
-
         <service android:name=".OnKillApp"
             android:stopWithTask="false" />
 

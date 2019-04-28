@@ -1,5 +1,6 @@
 package ir.drax.netwatch;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -24,7 +25,7 @@ public class OnKillApp extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        NetworkChangeReceiver.hideNotification(getApplicationContext());
+        NetWatch.unregister(getApplicationContext());
         stopSelf();
     }
 }

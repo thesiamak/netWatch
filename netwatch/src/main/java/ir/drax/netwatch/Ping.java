@@ -29,13 +29,12 @@ class Ping implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("ping");
         Runtime runtime = Runtime.getRuntime();
         try
         {
             Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 "+ context.getString(R.string.netwatch_target_ping_server_ip_add));
             int mExitValue = mIpAddrProcess.waitFor();
-            System.out.println(" mExitValue "+mExitValue);
+            System.out.println(" Ping mExitValue "+mExitValue);
             if(mExitValue==0){
                 cb.replied(context);
 
@@ -47,12 +46,12 @@ class Ping implements Runnable {
         catch (InterruptedException ignore)
         {
             ignore.printStackTrace();
-            System.out.println(" Exception:"+ignore);
+            System.out.println("Ping Exception:"+ignore);
         }
         catch (IOException e)
         {
             e.printStackTrace();
-            System.out.println(" Exception:"+e);
+            System.out.println("Ping Exception:"+e);
         }
         cb.ended(context);
     }
