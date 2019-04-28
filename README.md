@@ -2,6 +2,9 @@
 Simple Android library to notify Android device network changes and react properly.
 
 ## Preview GIF
+![netWatch - Simple Android library to notify Android device network changes and react properly](https://github.com/draxdave/netWatch/blob/master/gif/netwatch1.gif)
+
+
 
 ## Features: 
 - Detects internet connection changes(Connect / Disconnect)
