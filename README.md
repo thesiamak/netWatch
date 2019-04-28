@@ -1,4 +1,5 @@
-### netWatch
+### netWatch   [![](https://jitpack.io/v/draxdave/netWatch.svg)](https://jitpack.io/#draxdave/netWatch)
+
 Simple Android library to notify Android device network changes and react properly.
 
 ## Preview GIF
@@ -16,6 +17,26 @@ Simple Android library to notify Android device network changes and react proper
 
 
 ## Installation
+ Step 1. Add this in your root build.gradle at the end of repositories:
+
+```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	} 
+ ```
+ 
+ Step 2. Add the dependency
+
+ ```
+dependencies {
+	        implementation 'com.github.draxdave:netWatch:0.d.5'
+	}
+ ```
+ 
+
 
  
 ## Final speech 
