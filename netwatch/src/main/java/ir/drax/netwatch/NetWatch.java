@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 
 public class NetWatch {
-    public static Builder builder(Activity activity){
-        return Builder.getInstance(activity);
+    public static Builder builder(Context context){
+        return Builder.getInstance(context);
     }
 
     public static void unregister(Context context){
