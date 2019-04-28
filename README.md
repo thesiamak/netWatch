@@ -35,10 +35,39 @@ dependencies {
 	        implementation 'com.github.draxdave:netWatch:0.d.5'
 	}
  ```
- 
+
+Step 3. Register NetWatch
+
+Add below code inside base activity or Application class
+
+```java
+ NetWatch.builder(context)
+                .setIcon(R.drawable.ic_signal_wifi_off)
+                .setCallBack(new NetworkChangeReceiver_navigator() {
+                    @Override
+                    public void onConnected(int source) {
+                        // do some thing
+                    }
+
+                    @Override
+                    public void onDisconnected() {
+			// do some other thing
+                    }
+                })
+                .build();
+
+```
+
+## Available options
+- setIcon : Statusbar notification drawable graphic
+- setCallBack : onConnect and onDisconnect callbacks
+- setMessage : Statusbar notification message
+- setNotificationCancelable : Statusbar notification cancelable
+- setNotificationEnabled : Show statusbar notification on disconnect from internet
+- setNotificationBuilder : Create your own statusbar notification to show
+- unregister : disable NetWatch
 
 
- 
 ## Final speech 
 Feel free to engage! 
 This tiny library have a lot to do obviously . So help it if you liked it.
