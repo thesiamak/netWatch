@@ -68,6 +68,20 @@ Add below code inside base activity or Application class
 - unregister : disable NetWatch
 
 
+## Extra configs
+### Target server IP address
+Add following line inside string.xml file :
+
+    <string name="netwatch_target_ping_server_ip_add">8.8.8.8</string>
+    
+### Disconnect message text
+Add following line inside string.xml file :
+
+    <string name="netwatch_lost_connection">No internet connection</string>
+
+
+
+
 ## Final speech 
 Feel free to engage! 
 This tiny library have a lot to do obviously . So help it if you liked it.
