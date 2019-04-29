@@ -1,4 +1,4 @@
-### netWatch   [![](https://jitpack.io/v/draxdave/netWatch.svg)](https://jitpack.io/#draxdave/netWatch)
+# netWatch   [![](https://jitpack.io/v/draxdave/netWatch.svg)](https://jitpack.io/#draxdave/netWatch)
 
 Simple Android library to notify Android device network changes and react properly.
 
