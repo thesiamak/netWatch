@@ -14,22 +14,35 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
 import ir.drax.netwatch.cb.Ping_navigator;
 
+/*
+ *  ***** NetworkChangeReceiver ******
+ *
+ *  Simple Android library to notify Android device network changes and react properly.
+ *
+ *  This is the main class to handle events.
+ *  As a BroadcastReceiver any network connectivity change will be notified to this class on onReceive()
+ *   There is two methods to figure out if a connection established or not:
+ *      1- BroadcastReceiver listening to 'android.net.conn.CONNECTIVITY_CHANGE' action.
+ *      2- Broadcasting ICMP packets throw the network (Ping/echo requests)
+ *
+ *  Since in some cases Androids default broadcast system is not working reliably and mostly has delays then there have to be second/backup plan for the same purpose.
+ *  After a short research i come up with the Echo idea which looked more efficient between some other solutions.
+ *  During testing and profiling on different devices i realized that this combination works great.
+ * */
+
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
     private static String TAG = NetworkChangeReceiver.class.getSimpleName();
-    private static int CONNECTED_WIFI = 1;
-    private static int CONNECTED_MOBILE = 2;
     private static int DISCONNECTED = 0;
     private static int CONNECTED = 3;
     private static int LAST_STATE = -1;
-    private static int NOTIFICATIONS_ID=987;
+    private static int NOTIFICATIONS_ID=987231393;//A Random number to identify local notifications
     private static int GENERAL_PING_INTERVAL_MULTIPLIER_MS = 20,GENERAL_PING_INTERVAL_MAX_DELAY = 60000,unchanged_counter = 0;
     private static int notificationIcon = R.drawable.ic_nosignal;
     private static NetworkChangeReceiver_navigator uiNavigator;
@@ -87,16 +100,31 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         } else {
             hideNotification(context);
             if (uiNavigator!=null)
-                uiNavigator.onConnected(status);
+                uiNavigator.onConnected(getConnectionType(context));
         }
 
         LAST_STATE = status;
     }
+
+    /**
+     * Hide relevant notification card from top sidebar
+     * @param context
+     * Creates 'NotificationManager' from Context and then tries to hide Notification Card
+     */
     public static void hideNotification(Context context){
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATIONS_ID);
+        try {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(NOTIFICATIONS_ID);
+        }catch (Exception ignored){
+
+        }
     }
 
+    /**
+     * @param context
+     * @return Connectivity status as a Code
+     * Return value can be :DISCONNECTED=0 or :CONNECTED=3
+     */
     private static int getConnectivityStatus(Context context) {
 
         ConnectivityManager cm = (ConnectivityManager) context
@@ -111,6 +139,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         return DISCONNECTED;
     }
 
+    /**
+     * getConnectionType()  Detects the connection type if one existed
+     * @param context;
+     * @return Type of Connection returned by this method can be: TYPE_WIFI=1 or :TYPE_MOBILE=2
+     */
     private static int getConnectionType(Context context) {
 
         ConnectivityManager cm = (ConnectivityManager) context
@@ -120,9 +153,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
         if (null != activeNetwork) {
 
+            int CONNECTED_WIFI = 1;
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
                 return CONNECTED_WIFI;
 
+            int CONNECTED_MOBILE = 2;
             if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
                 return CONNECTED_MOBILE;
         }
@@ -159,6 +194,14 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public static void checkState(Context context){
         checkState(context,repeat);
     }
+    /**
+     * checkState() Tries to detects and understand connectivity in 2 available ways.
+     *
+     * @param context
+     * @param repeat
+     *
+     * restarts ping interval to make detection more sensitive by shorter ping delays
+     */
     public static  void checkState(Context context,int repeat){
         if (repeat==0){
             NetworkChangeReceiver.repeat = 1;
@@ -215,8 +258,16 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         NetworkChangeReceiver.mBuilder = mBuilder;
     }
 
+    /**
+     * unregister() Removes listeners , receivers and notification on app closure
+     * @param context
+     */
     public void unregister(Context context){
         hideNotification(context);
-        context.unregisterReceiver(this);
+        try {
+            context.unregisterReceiver(this);
+        } catch(IllegalArgumentException ignored) {
+
+        }
     }
 }

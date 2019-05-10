@@ -1,6 +1,5 @@
 package ir.drax.netwatch;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -8,6 +7,12 @@ import android.support.v4.app.NotificationCompat;
 
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
 
+/**
+ * NetWatch Builder class
+ * Initiates  NetworkChangeReceiver
+ * Registers receiver and sets configuration
+ * Requests unregister
+ */
 public class Builder {
     private static Builder instance;
     private NetworkChangeReceiver receiver;
