@@ -194,6 +194,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public static void checkState(Context context){
         checkState(context,repeat);
     }
+
     /**
      * checkState() Tries to detects and understand connectivity in 2 available ways.
      *
