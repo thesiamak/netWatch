@@ -141,7 +141,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
         }
 
-        netBanner.show();
+        if (!netBanner.isShowing())
+            netBanner.show();
     }
 
     /**
