@@ -2,7 +2,6 @@ package ir.drax.netwatch;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -133,7 +132,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             windowedDialog.setGravity(Gravity.CENTER);
             windowedDialog.setVisibility(View.GONE);
             windowedDialog.addView(view);
-            ViewGroup viewGroup = (ViewGroup) ((ViewGroup) Builder.getInstance(null).getContext()
+            ViewGroup viewGroup = (ViewGroup) ((ViewGroup) Builder.getInstance(null).getActivity()
                     .findViewById(android.R.id.content)).getChildAt(0);
 
             viewGroup.addView(windowedDialog);

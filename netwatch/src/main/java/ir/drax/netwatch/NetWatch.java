@@ -17,7 +17,7 @@ public class NetWatch {
     }
 
     public static void unregister(Context context){
-        Builder.getInstance((Activity) context).unregister();
+        Builder.getInstance(context).unregister();
     }
 
     public static boolean isConnected(Context context){

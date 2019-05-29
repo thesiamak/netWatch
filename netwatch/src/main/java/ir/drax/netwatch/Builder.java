@@ -18,7 +18,8 @@ public class Builder {
     private static Builder instance;
     private NetworkChangeReceiver receiver;
     private IntentFilter filter = new IntentFilter();
-    private Activity context;
+    private Activity activity;
+    private Context context;
 
     static Builder getInstance(Activity activity){
         if (instance==null)
@@ -27,7 +28,20 @@ public class Builder {
         return instance;
     }
 
-    private Builder(Activity context) {
+    static Builder getInstance(Context context){
+        if (instance==null)
+            instance = new Builder(context);
+
+        return instance;
+    }
+
+    private Builder(Activity activity) {
+        this.activity = activity;
+        receiver = new NetworkChangeReceiver();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+    }
+
+    private Builder(Context context) {
         this.context = context;
         receiver = new NetworkChangeReceiver();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -38,10 +52,17 @@ public class Builder {
         return this;
     }
     public void build(){
-        context.startService(new Intent(context, OnKillApp.class));
-        context.registerReceiver(receiver , filter);
+        if (context==null) {
+            activity.startService(new Intent(activity, OnKillApp.class));
+            activity.registerReceiver(receiver, filter);
 
-        NetworkChangeReceiver.checkState(context);
+            NetworkChangeReceiver.checkState(activity);
+        }else{
+            context.startService(new Intent(context, OnKillApp.class));
+            context.registerReceiver(receiver, filter);
+
+            NetworkChangeReceiver.checkState(context);
+        }
     }
 
     public Builder setCallBack(NetworkChangeReceiver_navigator uiNavigator){
@@ -88,11 +109,14 @@ public class Builder {
     }
 
     void unregister() {
-        receiver.unregister(context);
+        if (context==null)
+            receiver.unregister(activity);
+        else
+            receiver.unregister(context);
     }
 
-    Activity getContext() {
-        return context;
+    Activity getActivity() {
+        return context==null?activity: (Activity) context;
     }
 
     boolean isConnected() {

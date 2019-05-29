@@ -41,7 +41,7 @@ Step 3. Register NetWatch
 Add below code inside base activity or Application class
 
 ```java
- NetWatch.builder(context)
+ NetWatch.builder(activity)
                 .setIcon(R.drawable.ic_signal_wifi_off)
                 .setCallBack(new NetworkChangeReceiver_navigator() {
                     @Override

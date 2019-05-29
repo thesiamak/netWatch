@@ -8,7 +8,7 @@
     android:layout_height="wrap_content"
     android:minWidth="350dp"
     android:minHeight="350dp"
-    tools:context=".MainActivity">
+    tools:activity=".MainActivity">
 
     <ImageView
         app:layout_constraintStart_toStartOf="parent"
