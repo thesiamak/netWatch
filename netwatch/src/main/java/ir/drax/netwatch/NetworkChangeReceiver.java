@@ -131,6 +131,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             windowedDialog.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             windowedDialog.setBackgroundColor(Color.parseColor("#44000000"));
             windowedDialog.setGravity(Gravity.CENTER);
+            windowedDialog.setVisibility(View.GONE);
             windowedDialog.addView(view);
             ViewGroup viewGroup = (ViewGroup) ((ViewGroup) Builder.getInstance(null).getContext()
                     .findViewById(android.R.id.content)).getChildAt(0);
@@ -139,11 +140,30 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         }
 
         if (windowedDialog.getVisibility()==View.GONE) {
-            windowedDialog.setAlpha(0);
             windowedDialog.setVisibility(View.VISIBLE);
             windowedDialog.animate()
-                    .setDuration(2000)
                     .alpha(1)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            windowedDialog.setAlpha(1);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    })
                     .start();
         }
     }
@@ -161,6 +181,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             windowedDialog.setVisibility(View.GONE);
+                            windowedDialog.setAlpha(0);
                         }
 
                         @Override
