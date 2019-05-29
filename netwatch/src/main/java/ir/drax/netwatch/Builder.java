@@ -1,5 +1,6 @@
 package ir.drax.netwatch;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,16 +18,16 @@ public class Builder {
     private static Builder instance;
     private NetworkChangeReceiver receiver;
     private IntentFilter filter = new IntentFilter();
-    private Context context;
+    private Activity context;
 
-    static Builder getInstance(Context context){
+    static Builder getInstance(Activity activity){
         if (instance==null)
-            instance = new Builder(context);
+            instance = new Builder(activity);
 
         return instance;
     }
 
-    private Builder(Context context) {
+    private Builder(Activity context) {
         this.context = context;
         receiver = new NetworkChangeReceiver();
         filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -90,5 +91,11 @@ public class Builder {
         receiver.unregister(context);
     }
 
+    Activity getContext() {
+        return context;
+    }
 
+    boolean isConnected() {
+        return NetworkChangeReceiver.isConnected();
+    }
 }

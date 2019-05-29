@@ -1,6 +1,8 @@
 package ir.drax.netwatch;
 
+import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -19,8 +21,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
 import ir.drax.netwatch.cb.Ping_navigator;
@@ -59,6 +62,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static boolean cancelable = true, notificationEnabled = true;
     private static  NotificationCompat.Builder mBuilder;
     private static Dialog netBanner;
+    private static RelativeLayout windowedDialog;
 
 
     public NetworkChangeReceiver() {
@@ -85,7 +89,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             else{
                 View view = uiNavigator.onDisconnected();
                 if (view!=null)
-                    showBanner(context,view);
+                    //showDialogBanner(context,view);
+                    showWindowedBanner(context,view);
             }
 
             if (notificationEnabled) {
@@ -111,38 +116,92 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         } else {
             hideNotification(context);
             if (uiNavigator!=null) {
-                uiNavigator.onConnected(getConnectionType(context));
                 hideBanner();
+                uiNavigator.onConnected(getConnectionType(context));
             }
         }
 
         LAST_STATE = status;
     }
 
+    private static void showWindowedBanner(Context context, View view) {
+        if (view==null)return;
+        if (windowedDialog==null) {
+            windowedDialog = new RelativeLayout(context);
+            windowedDialog.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+            windowedDialog.setBackgroundColor(Color.parseColor("#44000000"));
+            windowedDialog.setGravity(Gravity.CENTER);
+            windowedDialog.addView(view);
+            ViewGroup viewGroup = (ViewGroup) ((ViewGroup) Builder.getInstance(null).getContext()
+                    .findViewById(android.R.id.content)).getChildAt(0);
+
+            viewGroup.addView(windowedDialog);
+        }
+
+        if (windowedDialog.getVisibility()==View.GONE) {
+            windowedDialog.setAlpha(0);
+            windowedDialog.setVisibility(View.VISIBLE);
+            windowedDialog.animate()
+                    .setDuration(2000)
+                    .alpha(1)
+                    .start();
+        }
+    }
+
     private static void hideBanner() {
-        if (netBanner != null)
+        if (windowedDialog!=null){
+            windowedDialog.animate()
+                    .alpha(0)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            windowedDialog.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    })
+                    .start();
+
+        }else if (netBanner != null)
             if (netBanner.isShowing()) {
                 netBanner.dismiss();
             }
-
     }
 
-    private static void showBanner(Context context, View view) {
-        if (view==null)return;
+    private static void showDialogBanner(Context context, View view) {
+        try {
+            if (view == null) return;
 
-        if (netBanner==null){
-            netBanner = new Dialog(context);
-            netBanner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            netBanner.setContentView(view);
-            netBanner.setCanceledOnTouchOutside(false);
-            netBanner.setCancelable(false);
-            netBanner.getWindow().getAttributes().gravity = Gravity.CENTER;
+            if (netBanner == null) {
+                netBanner = new Dialog(context);
+                netBanner.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                netBanner.setContentView(view);
+                netBanner.setCanceledOnTouchOutside(false);
+                netBanner.setCancelable(false);
+                netBanner.getWindow().getAttributes().gravity = Gravity.CENTER;
 
+            }
+
+            if (!netBanner.isShowing()) {
+                netBanner.show();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-        if (!netBanner.isShowing())
-            netBanner.show();
     }
 
     /**
@@ -308,8 +367,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
      * Context to unregister network change receivers
      */
     public void unregister(Context context){
-        hideNotification(context);
         hideBanner();
+        hideNotification(context);
         try {
             context.unregisterReceiver(this);
         } catch(IllegalArgumentException ignored) {
@@ -335,5 +394,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public static boolean isNotificationEnabled() {
         return notificationEnabled;
+    }
+
+    public static boolean isConnected() {
+        return LAST_STATE == CONNECTED;
     }
 }

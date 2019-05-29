@@ -1,5 +1,6 @@
 package ir.drax.netwatch;
 
+import android.app.Activity;
 import android.content.Context;
 
 /**
@@ -9,11 +10,18 @@ import android.content.Context;
  */
 public class NetWatch {
     public static Builder builder(Context context){
-        return Builder.getInstance(context);
+        return Builder.getInstance((Activity) context);
+    }
+    public static Builder builder(Activity activity){
+        return Builder.getInstance(activity);
     }
 
     public static void unregister(Context context){
-        Builder.getInstance(context).unregister();
+        Builder.getInstance((Activity) context).unregister();
+    }
+
+    public static boolean isConnected(Context context){
+        return Builder.getInstance((Activity) context).isConnected();
     }
 
 }
