@@ -2,6 +2,7 @@ package ir.drax.networkChangeNotifierSample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 import ir.drax.netwatch.NetWatch;
@@ -43,9 +44,11 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
      * On connection lost ..
      */
     @Override
-    public void onDisconnected() {
+    public View onDisconnected() {
         statusTv.setText(R.string.disconnected);
         statusTv.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+
+        return getLayoutInflater().inflate(R.layout.disconnected_banner,null,false);
     }
 }
 

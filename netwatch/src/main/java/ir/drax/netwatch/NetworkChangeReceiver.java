@@ -1,6 +1,7 @@
 package ir.drax.netwatch;
 
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -9,12 +10,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
 import ir.drax.netwatch.cb.Ping_navigator;
@@ -52,6 +58,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static Ping ping = new Ping();
     private static boolean cancelable = true, notificationEnabled = true;
     private static  NotificationCompat.Builder mBuilder;
+    private static Dialog netBanner;
 
 
     public NetworkChangeReceiver() {
@@ -75,7 +82,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 hideNotification(context);//do not care about net changes when app is closed
                 return;
             }
-            else uiNavigator.onDisconnected();
+            else{
+                View view = uiNavigator.onDisconnected();
+                if (view!=null)
+                    showBanner(context,view);
+            }
 
             if (notificationEnabled) {
                 if (mBuilder == null) {
@@ -99,11 +110,38 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             }
         } else {
             hideNotification(context);
-            if (uiNavigator!=null)
+            if (uiNavigator!=null) {
                 uiNavigator.onConnected(getConnectionType(context));
+                hideBanner();
+            }
         }
 
         LAST_STATE = status;
+    }
+
+    private static void hideBanner() {
+        if (netBanner != null)
+            if (netBanner.isShowing()) {
+                netBanner.dismiss();
+            }
+
+    }
+
+    private static void showBanner(Context context, View view) {
+        if (view==null)return;
+
+        if (netBanner==null){
+            netBanner = new Dialog(context);
+            netBanner.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            netBanner.setContentView(view);
+            netBanner.setCanceledOnTouchOutside(false);
+            netBanner.setCancelable(false);
+            netBanner.getWindow().getAttributes().gravity = Gravity.CENTER;
+
+        }
+
+        netBanner.show();
     }
 
     /**
@@ -242,7 +280,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             delay = GENERAL_PING_INTERVAL_MAX_DELAY;
 
 
-        Log.e(TAG , unchanged_counter+"=="+delay);
+        if (BuildConfig.DEBUG)
+            Log.e(TAG , unchanged_counter+"=="+delay);
         return delay;
     }
 
@@ -264,6 +303,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
      */
     public void unregister(Context context){
         hideNotification(context);
+        hideBanner();
         try {
             context.unregisterReceiver(this);
         } catch(IllegalArgumentException ignored) {

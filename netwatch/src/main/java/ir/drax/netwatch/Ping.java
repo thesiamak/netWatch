@@ -1,6 +1,7 @@
 package ir.drax.netwatch;
 
 import android.content.Context;
+import android.os.Build;
 
 import java.io.IOException;
 
@@ -34,7 +35,8 @@ class Ping implements Runnable {
         {
             Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 "+ context.getString(R.string.netwatch_target_ping_server_ip_add));
             int mExitValue = mIpAddrProcess.waitFor();
-            System.out.println(" Ping mExitValue "+mExitValue);
+            if (BuildConfig.DEBUG)
+                System.out.println(" Ping mExitValue "+mExitValue);
             if(mExitValue==0){
                 cb.replied(context);
 
@@ -46,11 +48,13 @@ class Ping implements Runnable {
         catch (InterruptedException ignore)
         {
             ignore.printStackTrace();
-            System.out.println("Ping Exception:"+ignore);
+            if (BuildConfig.DEBUG)
+                System.out.println("Ping Exception:"+ignore);
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            if (BuildConfig.DEBUG)
             System.out.println("Ping Exception:"+e);
         }
         cb.ended(context);
