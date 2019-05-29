@@ -66,6 +66,26 @@ public class Builder {
         return this;
     }
 
+    public int getNotificationsId() {
+        return NetworkChangeReceiver.getNotificationsId();
+    }
+
+    public static void setNotificationsId(int notificationsId) {
+        NetworkChangeReceiver.setNotificationsId(notificationsId);
+    }
+
+    public static String getMessage() {
+        return NetworkChangeReceiver.getMessage();
+    }
+
+    public static boolean isCancelable() {
+        return NetworkChangeReceiver.isCancelable();
+    }
+
+    public static boolean isNotificationEnabled() {
+        return NetworkChangeReceiver.isNotificationEnabled();
+    }
+
     void unregister() {
         receiver.unregister(context);
     }

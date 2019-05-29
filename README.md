@@ -88,5 +88,5 @@ This tiny library have a lot to do obviously . So help it if you liked it.
 There is always better solutions and libraries so search more and you'll found a better code.   
 Correct my mistakes and rewrite them in case you found some thing better or a more convenient way to handle issues.
 
-### This library created for a personal project 
+### This library created for a personal project but you can use any part of it as you wish .
    

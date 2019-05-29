@@ -49,7 +49,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static int CONNECTED = 3;
     private static int LAST_STATE = -1;
     private static int NOTIFICATIONS_ID=987231393;//A Random number to identify local notifications
-    private static int GENERAL_PING_INTERVAL_MULTIPLIER_MS = 20,GENERAL_PING_INTERVAL_MAX_DELAY = 60000,unchanged_counter = 0;
+    private static int GENERAL_PING_INTERVAL_MULTIPLIER_MS = 20,GENERAL_PING_INTERVAL_MAX_DELAY = 60000,GENERAL_PING_INTERVAL_MIN_DELAY = 1000,unchanged_counter = 0;
     private static int notificationIcon = R.drawable.ic_nosignal;
     private static NetworkChangeReceiver_navigator uiNavigator;
     private static String message ;
@@ -232,6 +232,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public static void checkState(Context context){
         checkState(context,repeat);
     }
+
     /**
      * checkState() Tries to detects and understand connectivity in 2 available ways.
      *
@@ -279,6 +280,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (delay > GENERAL_PING_INTERVAL_MAX_DELAY)
             delay = GENERAL_PING_INTERVAL_MAX_DELAY;
 
+        else if (delay < GENERAL_PING_INTERVAL_MIN_DELAY)
+            delay=GENERAL_PING_INTERVAL_MIN_DELAY;
+
 
         if (BuildConfig.DEBUG)
             Log.e(TAG , unchanged_counter+"=="+delay);
@@ -300,6 +304,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     /**
      * unregister() Removes listeners , receivers and notification on app closure
      * @param context
+     * Context to unregister network change receivers
      */
     public void unregister(Context context){
         hideNotification(context);
@@ -309,5 +314,25 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         } catch(IllegalArgumentException ignored) {
 
         }
+    }
+
+    public static int getNotificationsId() {
+        return NOTIFICATIONS_ID;
+    }
+
+    public static void setNotificationsId(int notificationsId) {
+        NOTIFICATIONS_ID = notificationsId;
+    }
+
+    public static String getMessage() {
+        return message;
+    }
+
+    public static boolean isCancelable() {
+        return cancelable;
+    }
+
+    public static boolean isNotificationEnabled() {
+        return notificationEnabled;
     }
 }
