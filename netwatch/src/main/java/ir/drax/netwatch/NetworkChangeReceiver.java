@@ -1,6 +1,5 @@
 package ir.drax.netwatch;
 
-import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.NotificationChannel;
@@ -58,7 +57,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static int repeat = 1 ;
     private static Handler pingHandler = new Handler();
     private static Ping ping = new Ping();
-    private static boolean cancelable = true, notificationEnabled = true;
+    private static boolean cancelable = true, notificationEnabled = true , bannerTypeDialog =false;
     private static  NotificationCompat.Builder mBuilder;
     private static Dialog netBanner;
     private static RelativeLayout windowedDialog;
@@ -88,8 +87,10 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             else{
                 View view = uiNavigator.onDisconnected();
                 if (view!=null)
-                    //showDialogBanner(context,view);
-                    showWindowedBanner(context,view);
+                    if (bannerTypeDialog)
+                        showDialogBanner(context,view);
+                    else
+                        showWindowedBanner(context,view);
             }
 
             if (notificationEnabled) {
@@ -140,60 +141,20 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
         if (windowedDialog.getVisibility()==View.GONE) {
             windowedDialog.setVisibility(View.VISIBLE);
-            windowedDialog.animate()
-                    .alpha(1)
-                    .setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
 
-                        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                windowedDialog.setAlpha(0);
+                windowedDialog.animate()
+                        .alpha(1)
+                        .start();
+            }
 
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            windowedDialog.setAlpha(1);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    })
-                    .start();
         }
     }
 
     private static void hideBanner() {
         if (windowedDialog!=null){
-            windowedDialog.animate()
-                    .alpha(0)
-                    .setListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            windowedDialog.setVisibility(View.GONE);
-                            windowedDialog.setAlpha(0);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    })
-                    .start();
+            windowedDialog.setVisibility(View.GONE);
 
         }else if (netBanner != null)
             if (netBanner.isShowing()) {
@@ -418,5 +379,13 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public static boolean isConnected() {
         return LAST_STATE == CONNECTED;
+    }
+
+    public static boolean bannerTypeDialog() {
+        return bannerTypeDialog;
+    }
+
+    public static void setBannerTypeDialog(boolean bannerTypeDialog) {
+        NetworkChangeReceiver.bannerTypeDialog = bannerTypeDialog;
     }
 }

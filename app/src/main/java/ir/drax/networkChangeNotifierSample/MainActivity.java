@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
                 .setNotificationCancelable(false)
                 /* setCallBack(): Network interaction events will be notified using this callback */
                 .setCallBack(this)
+                .setBannerTypeDialog(false)
                 .build();
     }
 

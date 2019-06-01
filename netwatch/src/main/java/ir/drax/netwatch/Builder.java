@@ -122,4 +122,12 @@ public class Builder {
     boolean isConnected() {
         return NetworkChangeReceiver.isConnected();
     }
+
+    public boolean bannerTypeIsDialog() {
+        return NetworkChangeReceiver.bannerTypeDialog();
+    }
+    public Builder setBannerTypeDialog(boolean bannerTypeDialog){
+        NetworkChangeReceiver.setBannerTypeDialog(bannerTypeDialog);
+        return this;
+    }
 }

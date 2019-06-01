@@ -50,10 +50,14 @@ Add below code inside base activity or Application class
                     }
 
                     @Override
-                    public void onDisconnected() {
-			// do some other thing
+                    public View onDisconnected() {
+			            // do some other stuff
+			            
+			            
+			            return null;//To display a dialog simply return a custom view or just null to ignore it
                     }
                 })
+                .setNotificationCancelable(false)
                 .build();
 
 ```
@@ -66,6 +70,9 @@ Add below code inside base activity or Application class
 - setNotificationEnabled : Show statusbar notification on disconnect from internet
 - setNotificationBuilder : Create your own statusbar notification to show
 - unregister : disable NetWatch
+- isConnected : get latest internet connection status
+
+- And ... 
 
 
 ## Extra configs
@@ -88,5 +95,5 @@ This tiny library have a lot to do obviously . So help it if you liked it.
 There is always better solutions and libraries so search more and you'll found a better code.   
 Correct my mistakes and rewrite them in case you found some thing better or a more convenient way to handle issues.
 
-### This library created for a personal project but you can use any part of it as you wish .
+### You can use any part of this small library as you wish .
    
