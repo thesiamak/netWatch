@@ -130,4 +130,12 @@ public class Builder {
         NetworkChangeReceiver.setBannerTypeDialog(bannerTypeDialog);
         return this;
     }
+
+    public boolean logsEnabled() {
+        return NetworkChangeReceiver.isLogsEnabled();
+    }
+    public Builder setLogsEnabled(boolean logsEnabled){
+        NetworkChangeReceiver.setLogsEnabled(logsEnabled);
+        return this;
+    }
 }

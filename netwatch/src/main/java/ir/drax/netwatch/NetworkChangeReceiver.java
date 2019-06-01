@@ -14,7 +14,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -55,9 +54,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static NetworkChangeReceiver_navigator uiNavigator;
     private static String message ;
     private static int repeat = 1 ;
-    private static Handler pingHandler = new Handler();
-    private static Ping ping = new Ping();
-    private static boolean cancelable = true, notificationEnabled = true , bannerTypeDialog =false;
+    private static boolean cancelable = true, notificationEnabled = true , bannerTypeDialog =false,logsEnabled=false;
     private static  NotificationCompat.Builder mBuilder;
     private static Dialog netBanner;
     private static RelativeLayout windowedDialog;
@@ -88,9 +85,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 View view = uiNavigator.onDisconnected();
                 if (view!=null)
                     if (bannerTypeDialog)
-                        showDialogBanner(context,view);
+                        showDialogBanner(view);
                     else
-                        showWindowedBanner(context,view);
+                        showWindowedBanner(view);
             }
 
             if (notificationEnabled) {
@@ -124,10 +121,10 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         LAST_STATE = status;
     }
 
-    private static void showWindowedBanner(Context context, View view) {
+    private static void showWindowedBanner(View view) {
         if (view==null)return;
         if (windowedDialog==null) {
-            windowedDialog = new RelativeLayout(context);
+            windowedDialog = new RelativeLayout(view.getContext());
             windowedDialog.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             windowedDialog.setBackgroundColor(Color.parseColor("#44000000"));
             windowedDialog.setGravity(Gravity.CENTER);
@@ -162,20 +159,17 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             }
     }
 
-    private static void showDialogBanner(Context context, View view) {
+    private static void showDialogBanner(View view) {
         try {
             if (view == null) return;
 
-            if (netBanner == null) {
-                netBanner = new Dialog(context);
-                netBanner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                netBanner.setContentView(view);
-                netBanner.setCanceledOnTouchOutside(false);
-                netBanner.setCancelable(false);
-                netBanner.getWindow().getAttributes().gravity = Gravity.CENTER;
-
-            }
+            netBanner = new Dialog(view.getContext());
+            netBanner.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            netBanner.setContentView(view);
+            netBanner.setCanceledOnTouchOutside(false);
+            netBanner.setCancelable(false);
+            netBanner.getWindow().getAttributes().gravity = Gravity.CENTER;
 
             if (!netBanner.isShowing()) {
                 netBanner.show();
@@ -282,15 +276,15 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
      *
      * restarts ping interval to make detection more sensitive by shorter ping delays
      */
-    public static  void checkState(Context context,int repeat){
+    public static  void checkState(final Context context, int repeat){
         if (repeat==0){
             NetworkChangeReceiver.repeat = 1;
 
         }else {
             NetworkChangeReceiver.repeat = repeat;
         }
-        pingHandler.removeCallbacks(ping);
-        pingHandler.postDelayed(ping.setContext(context).setCb(new Ping_navigator() {
+
+        new Ping().setCb(new Ping_navigator() {
             @Override
             public void timeout(Context context) {
                 if (NetworkChangeReceiver.repeat == 1) {
@@ -311,10 +305,12 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat - 1;
                 checkState(context ,NetworkChangeReceiver.repeat );
             }
-        }),getDelay());
+        }).execute(context);
+
+
     }
 
-    private static long getDelay() {
+    static long getDelay() {
         long delay;
 
         delay = unchanged_counter * unchanged_counter * GENERAL_PING_INTERVAL_MULTIPLIER_MS;
@@ -325,7 +321,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             delay=GENERAL_PING_INTERVAL_MIN_DELAY;
 
 
-        if (BuildConfig.DEBUG)
+        if (logsEnabled)
             Log.e(TAG , unchanged_counter+"=="+delay);
         return delay;
     }
@@ -387,5 +383,13 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public static void setBannerTypeDialog(boolean bannerTypeDialog) {
         NetworkChangeReceiver.bannerTypeDialog = bannerTypeDialog;
+    }
+
+    public static boolean isLogsEnabled() {
+        return logsEnabled;
+    }
+
+    public static void setLogsEnabled(boolean logsEnabled) {
+        NetworkChangeReceiver.logsEnabled = logsEnabled;
     }
 }

@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
                 .setNotificationCancelable(false)
                 /* setCallBack(): Network interaction events will be notified using this callback */
                 .setCallBack(this)
-                .setBannerTypeDialog(false)
+                .setLogsEnabled(true)
+                .setBannerTypeDialog(true)
                 .build();
     }
 
@@ -46,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
      */
     @Override
     public View onDisconnected() {
-        statusTv.setText(R.string.disconnected);
+        /*statusTv.setText(R.string.disconnected);
         statusTv.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-
+*/
         return getLayoutInflater().inflate(R.layout.disconnected_banner,null,false);
     }
 }
