@@ -49,7 +49,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static int CONNECTED = 3;
     private static int LAST_STATE = -1;
     private static int NOTIFICATIONS_ID=987231393;//A Random number to identify local notifications
-    private static int GENERAL_PING_INTERVAL_MULTIPLIER_MS = 20,GENERAL_PING_INTERVAL_MAX_DELAY = 60000,GENERAL_PING_INTERVAL_MIN_DELAY = 1000,unchanged_counter = 0;
+    private static int GENERAL_PING_INTERVAL_MULTIPLIER_MS = 20,GENERAL_PING_INTERVAL_MAX_DELAY = 8000,GENERAL_PING_INTERVAL_MIN_DELAY = 1000,unchanged_counter = 0;
     private static int notificationIcon = R.drawable.ic_nosignal;
     private static NetworkChangeReceiver_navigator uiNavigator;
     private static String message ;
@@ -69,7 +69,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (LAST_STATE == getConnectivityStatus(context))return;
 
         unchanged_counter = 0;
-        checkState(context , 4);
+        checkState(context , 2);
     }
 
     private static void detectAndAct(Context context, int status){
@@ -391,5 +391,21 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public static void setLogsEnabled(boolean logsEnabled) {
         NetworkChangeReceiver.logsEnabled = logsEnabled;
+    }
+
+    public static int getGeneralPingIntervalMaxDelay() {
+        return GENERAL_PING_INTERVAL_MAX_DELAY;
+    }
+
+    public static void setGeneralPingIntervalMaxDelay(int generalPingIntervalMaxDelay) {
+        GENERAL_PING_INTERVAL_MAX_DELAY = generalPingIntervalMaxDelay;
+    }
+
+    public static int getGeneralPingIntervalMinDelay() {
+        return GENERAL_PING_INTERVAL_MIN_DELAY;
+    }
+
+    public static void setGeneralPingIntervalMinDelay(int generalPingIntervalMinDelay) {
+        GENERAL_PING_INTERVAL_MIN_DELAY = generalPingIntervalMinDelay;
     }
 }

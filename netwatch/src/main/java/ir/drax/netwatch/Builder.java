@@ -138,4 +138,20 @@ public class Builder {
         NetworkChangeReceiver.setLogsEnabled(logsEnabled);
         return this;
     }
+
+    public void setMaxDelay(int maxDelay){
+        NetworkChangeReceiver.setGeneralPingIntervalMaxDelay(maxDelay);
+    }
+
+    public void setMinDelay(int minDelay){
+        NetworkChangeReceiver.setGeneralPingIntervalMinDelay(minDelay);
+    }
+
+    public int getMaxDelay(){
+        return NetworkChangeReceiver.getGeneralPingIntervalMaxDelay();
+    }
+
+    public int getMinDelay(){
+        return NetworkChangeReceiver.getGeneralPingIntervalMinDelay();
+    }
 }
