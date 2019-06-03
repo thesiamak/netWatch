@@ -150,13 +150,17 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     }
 
     private static void hideBanner() {
-        if (windowedDialog!=null){
-            windowedDialog.setVisibility(View.GONE);
+        try {
+            if (windowedDialog != null) {
+                windowedDialog.setVisibility(View.GONE);
 
-        }else if (netBanner != null)
-            if (netBanner.isShowing()) {
-                netBanner.dismiss();
-            }
+            } else if (netBanner != null)
+                if (netBanner.isShowing()) {
+                    netBanner.dismiss();
+                }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private static void showDialogBanner(View view) {
