@@ -95,12 +95,15 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
                     Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), getNotificationIcon());
                     mBuilder = new NotificationCompat.Builder(context)
-                            .setSmallIcon(getNotificationIcon())
                             .setLargeIcon(bitmap)
                             .setColor(Color.parseColor("#ffffff"))
                             .setContentTitle(message == null ? context.getString(R.string.netwatch_lost_connection) : message)
                             .setAutoCancel(true)
                             .setOngoing(!cancelable);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mBuilder.setSmallIcon(getNotificationIcon());
+                    }
                 }
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

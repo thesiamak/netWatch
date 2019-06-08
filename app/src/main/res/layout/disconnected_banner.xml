@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/icon"
-        android:src="@drawable/ic_signal_wifi_off"
+        app:srcCompat="@drawable/ic_signal_wifi_off"
         android:layout_centerInParent="true"
         android:layout_width="120dp"
         android:layout_height="120dp" />
