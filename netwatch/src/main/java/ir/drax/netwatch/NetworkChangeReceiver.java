@@ -14,12 +14,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
@@ -63,6 +65,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public NetworkChangeReceiver() {
         super();
     }
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -188,7 +191,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             if (!netBanner.isShowing()) {
                 netBanner.show();
             }
-        }catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -283,6 +286,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     }
 
     public static void checkState(Context context){
+        LAST_STATE= -1;
         checkState(context,repeat);
     }
 

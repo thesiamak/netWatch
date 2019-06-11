@@ -1,6 +1,5 @@
 package ir.drax.networkChangeNotifierSample;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,7 +8,7 @@ import android.widget.TextView;
 import ir.drax.netwatch.NetWatch;
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
 
-public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver_navigator {
+public class MainActivity1 extends AppCompatActivity implements NetworkChangeReceiver_navigator {
 
     TextView statusTv ;
     @Override
@@ -58,14 +57,14 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
      */
     @Override
     public View onDisconnected() {
-        /*statusTv.setText(R.string.disconnected);
-        statusTv.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-*/
-        return getLayoutInflater().inflate(R.layout.disconnected_banner,null,false);
-    }
-
-    public void go(View view) {
-        startActivity(new Intent(this,MainActivity1.class));
+        View view=getLayoutInflater().inflate(R.layout.disconnected_banner,null,false);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        return view;
     }
 }
 
