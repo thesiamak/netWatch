@@ -36,15 +36,25 @@ public class Builder {
     }
 
     private Builder(Activity activity) {
-        this.activity = activity;
-        receiver = new NetworkChangeReceiver();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        try {
+            this.activity = activity;
+            receiver = new NetworkChangeReceiver();
+            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private Builder(Context context) {
-        this.context = context;
-        receiver = new NetworkChangeReceiver();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        try {
+
+            this.context = context;
+            receiver = new NetworkChangeReceiver();
+            filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public Builder setIcon(int icon){
@@ -52,16 +62,20 @@ public class Builder {
         return this;
     }
     public void build(){
-        if (context==null) {
-            activity.startService(new Intent(activity, OnKillApp.class));
-            activity.registerReceiver(receiver, filter);
+        try{
+            if (context==null) {
+                activity.startService(new Intent(activity, OnKillApp.class));
+                activity.registerReceiver(receiver, filter);
 
-            NetworkChangeReceiver.checkState(activity);
-        }else{
-            context.startService(new Intent(context, OnKillApp.class));
-            context.registerReceiver(receiver, filter);
+                NetworkChangeReceiver.checkState(activity);
+            }else{
+                context.startService(new Intent(context, OnKillApp.class));
+                context.registerReceiver(receiver, filter);
 
-            NetworkChangeReceiver.checkState(context);
+                NetworkChangeReceiver.checkState(context);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

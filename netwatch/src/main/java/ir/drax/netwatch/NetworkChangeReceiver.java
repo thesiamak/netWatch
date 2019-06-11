@@ -73,82 +73,89 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     }
 
     private static void detectAndAct(Context context, int status){
-        if (LAST_STATE == status)return;
-        else unchanged_counter=0;//reset counter
+        try {
+            if (LAST_STATE == status) return;
+            else unchanged_counter = 0;//reset counter
 
-        if (status == DISCONNECTED) {
-            if (uiNavigator == null){
-                hideNotification(context);//do not care about net changes when app is closed
-                return;
-            }
-            else{
-                View view = uiNavigator.onDisconnected();
-                if (view!=null)
-                    if (bannerTypeDialog)
-                        showDialogBanner(view);
-                    else
-                        showWindowedBanner(view);
-            }
+            if (status == DISCONNECTED) {
+                if (uiNavigator == null) {
+                    hideNotification(context);//do not care about net changes when app is closed
+                    return;
+                } else {
+                    View view = uiNavigator.onDisconnected();
+                    if (view != null)
+                        if (bannerTypeDialog)
+                            showDialogBanner(view);
+                        else
+                            showWindowedBanner(view);
+                }
 
-            if (notificationEnabled) {
-                if (mBuilder == null) {
+                if (notificationEnabled) {
+                    if (mBuilder == null) {
 
-                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), getNotificationIcon());
-                    mBuilder = new NotificationCompat.Builder(context)
-                            .setLargeIcon(bitmap)
-                            .setColor(Color.parseColor("#ffffff"))
-                            .setContentTitle(message == null ? context.getString(R.string.netwatch_lost_connection) : message)
-                            .setAutoCancel(true)
-                            .setOngoing(!cancelable);
+                        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), getNotificationIcon());
+                        mBuilder = new NotificationCompat.Builder(context)
+                                .setLargeIcon(bitmap)
+                                .setColor(Color.parseColor("#ffffff"))
+                                .setContentTitle(message == null ? context.getString(R.string.netwatch_lost_connection) : message)
+                                .setAutoCancel(true)
+                                .setOngoing(!cancelable);
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        mBuilder.setSmallIcon(getNotificationIcon());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mBuilder.setSmallIcon(getNotificationIcon());
+                        }
                     }
-                }
-                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    mBuilder.setChannelId(TAG);
-                    createChannel(notificationManager);
-                }
+                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mBuilder.setChannelId(TAG);
+                        createChannel(notificationManager);
+                    }
 
-                notificationManager.notify(NOTIFICATIONS_ID, mBuilder.build());
+                    notificationManager.notify(NOTIFICATIONS_ID, mBuilder.build());
+                }
+            } else {
+                hideNotification(context);
+                if (uiNavigator != null) {
+                    hideBanner();
+                    uiNavigator.onConnected(getConnectionType(context));
+                }
             }
-        } else {
-            hideNotification(context);
-            if (uiNavigator!=null) {
-                hideBanner();
-                uiNavigator.onConnected(getConnectionType(context));
-            }
+
+            LAST_STATE = status;
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-        LAST_STATE = status;
     }
 
     private static void showWindowedBanner(View view) {
-        if (view==null)return;
-        if (windowedDialog==null) {
-            windowedDialog = new RelativeLayout(view.getContext());
-            windowedDialog.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-            windowedDialog.setBackgroundColor(Color.parseColor("#44000000"));
-            windowedDialog.setGravity(Gravity.CENTER);
-            windowedDialog.setVisibility(View.GONE);
-            windowedDialog.addView(view);
-            ViewGroup viewGroup = (ViewGroup) ((ViewGroup) Builder.getInstance(null).getActivity()
-                    .findViewById(android.R.id.content)).getChildAt(0);
+        try{
+            if (view==null)return;
+            if (windowedDialog==null) {
+                windowedDialog = new RelativeLayout(view.getContext());
+                windowedDialog.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                windowedDialog.setBackgroundColor(Color.parseColor("#44000000"));
+                windowedDialog.setGravity(Gravity.CENTER);
+                windowedDialog.setVisibility(View.GONE);
+                windowedDialog.addView(view);
+                ViewGroup viewGroup = (ViewGroup) ((ViewGroup) Builder.getInstance(null).getActivity()
+                        .findViewById(android.R.id.content)).getChildAt(0);
 
-            viewGroup.addView(windowedDialog);
-        }
-
-        if (windowedDialog.getVisibility()==View.GONE) {
-            windowedDialog.setVisibility(View.VISIBLE);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                windowedDialog.setAlpha(0);
-                windowedDialog.animate()
-                        .alpha(1)
-                        .start();
+                viewGroup.addView(windowedDialog);
             }
 
+            if (windowedDialog.getVisibility()==View.GONE) {
+                windowedDialog.setVisibility(View.VISIBLE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    windowedDialog.setAlpha(0);
+                    windowedDialog.animate()
+                            .alpha(1)
+                            .start();
+                }
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -250,13 +257,17 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @TargetApi(Build.VERSION_CODES.O)
     private static void createChannel(NotificationManager manager) {
-        int importance = NotificationManager.IMPORTANCE_HIGH;
+        try{
+            int importance = NotificationManager.IMPORTANCE_HIGH;
 
-        NotificationChannel mChannel = new NotificationChannel(TAG, TAG, importance);
-        mChannel.setDescription("");
-        mChannel.enableLights(true);
-        mChannel.setLightColor(Color.BLUE);
-        manager.createNotificationChannel(mChannel);
+            NotificationChannel mChannel = new NotificationChannel(TAG, TAG, importance);
+            mChannel.setDescription("");
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.BLUE);
+            manager.createNotificationChannel(mChannel);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static void setNotificationIcon(int notificationIcon) {
@@ -284,52 +295,59 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
      * restarts ping interval to make detection more sensitive by shorter ping delays
      */
     public static  void checkState(final Context context, int repeat){
-        if (repeat==0){
-            NetworkChangeReceiver.repeat = 1;
+        try{
+            if (repeat==0){
+                NetworkChangeReceiver.repeat = 1;
 
-        }else {
-            NetworkChangeReceiver.repeat = repeat;
-        }
+            }else {
+                NetworkChangeReceiver.repeat = repeat;
+            }
 
-        new Ping().setCb(new Ping_navigator() {
-            @Override
-            public void timeout(Context context) {
-                if (NetworkChangeReceiver.repeat == 1) {
-                    detectAndAct(context, NetworkChangeReceiver.DISCONNECTED);
+            new Ping().setCb(new Ping_navigator() {
+                @Override
+                public void timeout(Context context) {
+                    if (NetworkChangeReceiver.repeat == 1) {
+                        detectAndAct(context, NetworkChangeReceiver.DISCONNECTED);
+                    }
                 }
-            }
 
-            @Override
-            public void replied(Context context) {
+                @Override
+                public void replied(Context context) {
 
-                detectAndAct(context ,NetworkChangeReceiver.CONNECTED);
-                NetworkChangeReceiver.repeat = 1 ;
-            }
+                    detectAndAct(context ,NetworkChangeReceiver.CONNECTED);
+                    NetworkChangeReceiver.repeat = 1 ;
+                }
 
-            @Override
-            public void ended(Context context) {
-                unchanged_counter ++;
-                NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat - 1;
-                checkState(context ,NetworkChangeReceiver.repeat );
-            }
-        }).execute(context);
-
+                @Override
+                public void ended(Context context) {
+                    unchanged_counter ++;
+                    NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat - 1;
+                    checkState(context ,NetworkChangeReceiver.repeat );
+                }
+            }).execute(context);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
     static long getDelay() {
-        long delay;
+        long delay=GENERAL_PING_INTERVAL_MIN_DELAY;
+        try {
 
-        delay = unchanged_counter * unchanged_counter * GENERAL_PING_INTERVAL_MULTIPLIER_MS;
-        if (delay > GENERAL_PING_INTERVAL_MAX_DELAY)
-            delay = GENERAL_PING_INTERVAL_MAX_DELAY;
+            delay = unchanged_counter * unchanged_counter * GENERAL_PING_INTERVAL_MULTIPLIER_MS;
+            if (delay > GENERAL_PING_INTERVAL_MAX_DELAY)
+                delay = GENERAL_PING_INTERVAL_MAX_DELAY;
 
-        else if (delay < GENERAL_PING_INTERVAL_MIN_DELAY)
-            delay=GENERAL_PING_INTERVAL_MIN_DELAY;
+            else if (delay < GENERAL_PING_INTERVAL_MIN_DELAY)
+                delay = GENERAL_PING_INTERVAL_MIN_DELAY;
 
 
-        if (logsEnabled)
-            Log.e(TAG , unchanged_counter+"=="+delay);
+            if (logsEnabled)
+                Log.e(TAG, unchanged_counter + "==" + delay);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return delay;
     }
 
