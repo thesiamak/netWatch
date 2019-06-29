@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -328,7 +329,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                     NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat - 1;
                     checkState(context ,NetworkChangeReceiver.repeat );
                 }
-            }).execute(context);
+            }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,context);
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -63,9 +63,5 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
 */
         return getLayoutInflater().inflate(R.layout.disconnected_banner,null,false);
     }
-
-    public void go(View view) {
-        startActivity(new Intent(this,MainActivity1.class));
-    }
 }
 
