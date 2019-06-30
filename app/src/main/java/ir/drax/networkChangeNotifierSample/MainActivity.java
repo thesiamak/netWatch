@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
                 .setCallBack(this)
                 .setLogsEnabled(true)
                 .setBannerTypeDialog(true)
+                .setSensitivity(4)
                 .build();
 
         super.onResume();

@@ -153,12 +153,14 @@ public class Builder {
         return this;
     }
 
-    public void setMaxDelay(int maxDelay){
+    public Builder setMaxDelay(int maxDelay){
         NetworkChangeReceiver.setGeneralPingIntervalMaxDelay(maxDelay);
+        return this;
     }
 
-    public void setMinDelay(int minDelay){
+    public Builder setMinDelay(int minDelay){
         NetworkChangeReceiver.setGeneralPingIntervalMinDelay(minDelay);
+        return this;
     }
 
     public int getMaxDelay(){
@@ -167,5 +169,14 @@ public class Builder {
 
     public int getMinDelay(){
         return NetworkChangeReceiver.getGeneralPingIntervalMinDelay();
+    }
+
+    public int getSensitivity(){
+        return NetworkChangeReceiver.getSensitivity();
+    }
+
+    public Builder setSensitivity(int sensitivity){
+        NetworkChangeReceiver.setSensitivity(sensitivity);
+        return this;
     }
 }

@@ -15,14 +15,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import ir.drax.netwatch.cb.NetworkChangeReceiver_navigator;
@@ -56,11 +54,12 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private static int notificationIcon = R.drawable.ic_nosignal;
     private static NetworkChangeReceiver_navigator uiNavigator;
     private static String message ;
-    private static int repeat = 1 ;
+    private static int repeat = 1, sensitivity=5 ;
     private static boolean cancelable = true, notificationEnabled = true , bannerTypeDialog =false,logsEnabled=false;
     private static  NotificationCompat.Builder mBuilder;
     private static Dialog netBanner;
     private static RelativeLayout windowedDialog;
+    private static Ping ping;
 
 
     public NetworkChangeReceiver() {
@@ -71,9 +70,10 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (LAST_STATE == getConnectivityStatus(context))return;
+        unchanged_counter = 0; //Reduce delay so checker will be more sensitive for a while
 
-        unchanged_counter = 0;
-        checkState(context , 2);
+        if (ping != null)ping.resume();
+
     }
 
     private static void detectAndAct(Context context, int status){
@@ -287,19 +287,23 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     }
 
     public static void checkState(Context context){
-        LAST_STATE= -1;
-        checkState(context,repeat);
+        if (ping==null) {
+            LAST_STATE= -1;
+            repeat=1;
+            initPing(context,repeat);
+        }
+//        else ping.resume();
     }
 
     /**
-     * checkState() Tries to detects and understand connectivity in 2 available ways.
+     * initPing() Tries to detects and understand connectivity in 2 available ways.
      *
      * @param context
      * @param repeat
      *
      * restarts ping interval to make detection more sensitive by shorter ping delays
      */
-    public static  void checkState(final Context context, int repeat){
+    public static  void initPing(final Context context, int repeat){
         try{
             if (repeat==0){
                 NetworkChangeReceiver.repeat = 1;
@@ -308,7 +312,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 NetworkChangeReceiver.repeat = repeat;
             }
 
-            new Ping().setCb(new Ping_navigator() {
+
+            ping=new Ping().setCb(new Ping_navigator() {
                 @Override
                 public void timeout(Context context) {
                     if (NetworkChangeReceiver.repeat == 1) {
@@ -320,16 +325,20 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 public void replied(Context context) {
 
                     detectAndAct(context ,NetworkChangeReceiver.CONNECTED);
-                    NetworkChangeReceiver.repeat = 1 ;
+                    NetworkChangeReceiver.repeat = sensitivity;
                 }
 
                 @Override
                 public void ended(Context context) {
                     unchanged_counter ++;
-                    NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat - 1;
-                    checkState(context ,NetworkChangeReceiver.repeat );
+                    NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat > 1 ? NetworkChangeReceiver.repeat - 1:1;
+                    initPing(context ,NetworkChangeReceiver.repeat );
                 }
-            }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,context);
+            });
+            ping.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,context);
+
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -437,5 +446,13 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     public static void setGeneralPingIntervalMinDelay(int generalPingIntervalMinDelay) {
         GENERAL_PING_INTERVAL_MIN_DELAY = generalPingIntervalMinDelay;
+    }
+
+    public static int getSensitivity() {
+        return sensitivity;
+    }
+
+    public static void setSensitivity(int sensitivity) {
+        NetworkChangeReceiver.sensitivity = sensitivity;
     }
 }
