@@ -71,8 +71,10 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (LAST_STATE == getConnectivityStatus(context))return;
         unchanged_counter = 0; //Reduce delay so checker will be more sensitive for a while
+        System.out.println("Ping Exception:********");
 
-        if (ping != null)ping.resume();
+        if (ping != null)
+            ping.resume();
 
     }
 
@@ -313,7 +315,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             }
 
 
-            ping=new Ping().setCb(new Ping_navigator() {
+            ping = new Ping().setCb(new Ping_navigator() {
                 @Override
                 public void timeout(Context context) {
                     if (NetworkChangeReceiver.repeat == 1) {

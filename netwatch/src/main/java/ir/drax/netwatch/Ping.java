@@ -76,7 +76,17 @@ class Ping extends AsyncTask<Context, Void, Context> {
     }
 
     void resume(){
-        activeThread.interrupt();
+        if (activeThread==null){
+            activeThread=Thread.currentThread();
+            System.out.println("Ping 22Exception:********");
+
+        }
+        if (activeThread.isAlive()){
+            System.out.println("Ping 33Exception:********");
+            activeThread.interrupt();
+
+        }
+
     }
 
 }
