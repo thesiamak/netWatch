@@ -10,7 +10,7 @@ import android.content.Context;
  */
 public class NetWatch {
     public static Builder builder(Context context){
-        return Builder.getInstance((Activity) context);
+        return Builder.getInstance(context);
     }
     public static Builder builder(Activity activity){
         return Builder.getInstance(activity);
@@ -19,9 +19,17 @@ public class NetWatch {
     public static void unregister(Context context){
         Builder.getInstance(context).unregister();
     }
+    
+    public static void unregister(Activity activity){
+        Builder.getInstance(activity).unregister();
+    }
 
     public static boolean isConnected(Context context){
-        return Builder.getInstance((Activity) context).isConnected();
+        return Builder.getInstance(context).isConnected();
+    }
+    
+    public static boolean isConnected(Activity activity){
+        return Builder.getInstance(activity).isConnected();
     }
 
 }
