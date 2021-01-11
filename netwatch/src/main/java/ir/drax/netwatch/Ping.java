@@ -20,7 +20,7 @@ class Ping extends AsyncTask<Context, Void, Context> {
     protected Context doInBackground(Context... contexts) {
         try
         {
-            activeThread=Thread.currentThread();
+            activeThread= Thread.currentThread();
             Thread.sleep(NetworkChangeReceiver.getDelay());
             pingProcess(contexts[0]);
 
@@ -76,7 +76,16 @@ class Ping extends AsyncTask<Context, Void, Context> {
     }
 
     void resume(){
-        activeThread.interrupt();
+        try {
+            if (activeThread==null){
+                activeThread=Thread.currentThread();
+            }
+            if (activeThread.isAlive()){
+                activeThread.interrupt();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
