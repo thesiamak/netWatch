@@ -32,7 +32,7 @@ allprojects {
 
  ```
 dependencies {
-	        implementation 'com.github.draxdave:netWatch:0.d.19'
+	        implementation 'com.github.hamzaahmedkhan:netWatch:0.d.21'
 	}
  ```
 
