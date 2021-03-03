@@ -115,7 +115,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                         createChannel(notificationManager);
                     }
 
-                    notificationManager.notify(NOTIFICATIONS_ID, mBuilder.build());
+                    if (notificationManager != null) {
+                        notificationManager.notify(NOTIFICATIONS_ID, mBuilder.build());
+                    }
                 }
             } else {
                 hideNotification(context);
@@ -183,7 +185,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
             netBanner = new Dialog(view.getContext());
             netBanner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            if (netBanner.getWindow() != null) {
+                netBanner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
             netBanner.setContentView(view);
             netBanner.setCanceledOnTouchOutside(false);
             netBanner.setCancelable(false);
@@ -205,7 +209,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public static void hideNotification(Context context){
         try {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(NOTIFICATIONS_ID);
+            if (notificationManager != null) {
+                notificationManager.cancel(NOTIFICATIONS_ID);
+            }
         }catch (Exception ignored){
 
         }
@@ -221,10 +227,12 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = null;
+        if (cm != null) {
+            activeNetwork = cm.getActiveNetworkInfo();
+        }
 
         if (null != activeNetwork) {
-
             return CONNECTED;
         }
         return DISCONNECTED;
@@ -240,7 +248,10 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = null;
+        if (cm != null) {
+            activeNetwork = cm.getActiveNetworkInfo();
+        }
 
         if (null != activeNetwork) {
 
@@ -324,7 +335,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 @Override
                 public void replied(Context context) {
 
-                    detectAndAct(context ,NetworkChangeReceiver.CONNECTED);
+                    detectAndAct(context , NetworkChangeReceiver.CONNECTED);
                     NetworkChangeReceiver.repeat = sensitivity;
                 }
 
@@ -332,7 +343,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 public void ended(Context context) {
                     unchanged_counter ++;
                     NetworkChangeReceiver.repeat = NetworkChangeReceiver.repeat > 1 ? NetworkChangeReceiver.repeat - 1:1;
-                    initPing(context ,NetworkChangeReceiver.repeat );
+                    initPing(context , NetworkChangeReceiver.repeat );
                 }
             });
             ping.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,context);

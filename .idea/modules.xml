@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Networkchangenotifiersample.iml" filepath="$PROJECT_DIR$/Networkchangenotifiersample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/netWatch.iml" filepath="$PROJECT_DIR$/netWatch.iml" />
-      <module fileurl="file://$PROJECT_DIR$/netwatch/netwatch.iml" filepath="$PROJECT_DIR$/netwatch/netwatch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/netWatch.iml" filepath="$PROJECT_DIR$/.idea/netWatch.iml" />
     </modules>
   </component>
 </project>
