@@ -10,7 +10,7 @@ import android.content.Context;
  */
 public class NetWatch {
     public static Builder builder(Context context){
-        return Builder.getInstance((Activity) context);
+        return Builder.getInstance( context);
     }
     public static Builder builder(Activity activity){
         return Builder.getInstance(activity);
