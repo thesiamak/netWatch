@@ -21,7 +21,7 @@ public class NetWatch {
     }
 
     public static boolean isConnected(Context context){
-        return Builder.getInstance((Activity) context).isConnected();
+        return Builder.getInstance(context).isConnected();
     }
 
 }
